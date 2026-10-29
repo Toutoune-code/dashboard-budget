@@ -91,12 +91,12 @@ body{margin:0}
 }
 
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%; text-size-adjust:100%; touch-action:manipulation; overflow-x:hidden}
+html{-webkit-text-size-adjust:100%; text-size-adjust:100%; touch-action:manipulation; overscroll-behavior-y:none}
 button,input,select,label,a{touch-action:manipulation}
 body{
   background:var(--bg); color:var(--ink);
   font-family:var(--font-body); font-size:15px; line-height:1.5;
-  min-height:100vh; overflow-x:hidden; overscroll-behavior:none;
+  min-height:100vh; overflow-x:hidden;
   -webkit-font-smoothing:antialiased;
 }
 .num{font-variant-numeric:tabular-nums}
