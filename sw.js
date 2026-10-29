@@ -1,6 +1,6 @@
 /* Dashboard Budget : fonctionnement hors ligne.
    Changez la version ci-dessous à chaque mise à jour de index.html. */
-const CACHE = "dashboard-budget-v6";
+const CACHE = "dashboard-budget-v7";
 const ASSETS = [
   "./",
   "./index.html",
