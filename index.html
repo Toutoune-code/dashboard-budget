@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#0C9C8B">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -51,8 +51,8 @@ body{margin:0}
   --good:#12955F; --good-bg:rgba(18,149,95,.12);
   --warn:#B9740A; --warn-bg:rgba(231,154,30,.16);
   --crit:#D2423A; --crit-bg:rgba(226,86,75,.13);
-  --c1:#3D78EE; --c2:#E2564B; --c3:#EE9A2E; --c4:#8B6CF0; --c5:#D9B21F;
-  --c6:#1FAFC4; --c7:#DD62AC; --c8:#27A974; --c9:#A27A52; --c10:#8C96A8;
+  --c1:#2563EB; --c2:#DC2626; --c3:#F97316; --c4:#7C3AED; --c5:#EAB308;
+  --c6:#0EA5E9; --c7:#DB2777; --c8:#65A30D; --c9:#A16207; --c10:#94A3B8; --inv:#1F2937;
   --font-display:"Unbounded","Arial Rounded MT Bold","Trebuchet MS",system-ui,sans-serif;
   --font-body:"Manrope","Segoe UI",system-ui,-apple-system,sans-serif;
   --r-lg:28px; --r-md:18px; --r-sm:12px;
@@ -69,8 +69,8 @@ body{margin:0}
     --good:#45D995; --good-bg:rgba(69,217,149,.14);
     --warn:#F2B451; --warn-bg:rgba(242,180,81,.15);
     --crit:#FF7D72; --crit-bg:rgba(255,125,114,.15);
-    --c1:#6E9BFF; --c2:#FF7D72; --c3:#FFB65C; --c4:#A891FF; --c5:#F1D25A;
-    --c6:#4FD3E6; --c7:#F48CCB; --c8:#4FD69A; --c9:#C9A07A; --c10:#A3ACBD;
+    --c1:#60A5FA; --c2:#F87171; --c3:#FB923C; --c4:#A78BFA; --c5:#FDE047;
+    --c6:#38BDF8; --c7:#F472B6; --c8:#A3E635; --c9:#D6A35C; --c10:#64748B; --inv:#F1F5F9;
     color-scheme:dark;
   }
 }
@@ -85,16 +85,18 @@ body{margin:0}
   --good:#45D995; --good-bg:rgba(69,217,149,.14);
   --warn:#F2B451; --warn-bg:rgba(242,180,81,.15);
   --crit:#FF7D72; --crit-bg:rgba(255,125,114,.15);
-  --c1:#6E9BFF; --c2:#FF7D72; --c3:#FFB65C; --c4:#A891FF; --c5:#F1D25A;
-  --c6:#4FD3E6; --c7:#F48CCB; --c8:#4FD69A; --c9:#C9A07A; --c10:#A3ACBD;
+  --c1:#60A5FA; --c2:#F87171; --c3:#FB923C; --c4:#A78BFA; --c5:#FDE047;
+  --c6:#38BDF8; --c7:#F472B6; --c8:#A3E635; --c9:#D6A35C; --c10:#64748B; --inv:#F1F5F9;
   color-scheme:dark;
 }
 
 *{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%; text-size-adjust:100%; touch-action:manipulation; overflow-x:hidden}
+button,input,select,label,a{touch-action:manipulation}
 body{
   background:var(--bg); color:var(--ink);
   font-family:var(--font-body); font-size:15px; line-height:1.5;
-  min-height:100vh; overflow-x:hidden;
+  min-height:100vh; overflow-x:hidden; overscroll-behavior:none;
   -webkit-font-smoothing:antialiased;
 }
 .num{font-variant-numeric:tabular-nums}
@@ -182,6 +184,13 @@ body{
 .hero-title-row{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:6px}
 .hero-title-row .eyebrow{margin:0}
 
+.bal{display:grid; grid-template-columns:minmax(0,210px) minmax(0,1fr); gap:18px; align-items:center; margin-top:18px; padding:14px 16px; border-radius:var(--r-md); background:var(--glass-strong); border:1px solid var(--glass-brd)}
+.bal-k{font-size:12px; color:var(--ink-soft); font-weight:600}
+.bal-v{font-family:var(--font-display); font-weight:600; font-size:24px; letter-spacing:-.02em; line-height:1.2}
+.bal-v.neg{color:var(--crit)}
+.bal-s{font-size:12.5px; color:var(--ink-soft); margin-top:2px}
+.pill.ok{background:color-mix(in srgb,var(--c1) 14%,transparent); color:var(--c1)}
+@media (max-width:520px){ .bal{grid-template-columns:minmax(0,1fr); gap:10px} }
 .kpis{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-top:22px}
 .kpi{padding:12px 14px; border-radius:var(--r-md); background:var(--glass-strong); border:1px solid var(--glass-brd); min-width:0}
 .kpi .k{font-size:12px; color:var(--ink-soft); font-weight:600}
@@ -202,10 +211,10 @@ body{
 .card-h h2{font-family:var(--font-display); font-weight:500; font-size:16px; margin:0; letter-spacing:-.01em}
 .card-h .aside{font-size:12.5px; color:var(--ink-soft)}
 
-.flow{display:flex; height:22px; border-radius:999px; overflow:hidden; background:var(--line); position:relative; gap:2px}
+.flow{display:flex; height:26px; border-radius:999px; overflow:hidden; background:var(--line); position:relative; gap:2px}
 .flow span{display:block; height:100%; min-width:3px; transition:flex-grow .6s cubic-bezier(.34,1.3,.64,1)}
-.flow .rest{background:repeating-linear-gradient(135deg,var(--good-bg) 0 6px,transparent 6px 12px); box-shadow:inset 0 0 0 1px var(--good-bg)}
-.flow .inv{background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+.flow .rest{background:repeating-linear-gradient(135deg,var(--good) 0 5px,color-mix(in srgb,var(--good) 38%,transparent) 5px 10px)}
+.flow .inv{background:var(--inv)}
 .flow-marker{position:absolute; top:-4px; bottom:-4px; width:2px; background:var(--ink); border-radius:2px}
 .legend{display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:6px 18px; margin-top:16px}
 .lg{display:flex; align-items:center; gap:8px; font-size:13px; min-width:0}
@@ -222,7 +231,8 @@ body{
 .date-chip small{font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); margin-top:3px}
 .up-name{font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 .up-when{font-size:12px; color:var(--ink-soft)}
-.up-amt{font-weight:700}
+.up-amt{font-weight:700; white-space:nowrap}
+.up-amt.inv{color:var(--inv)}
 .month-left{margin-top:12px; padding-top:12px; border-top:1px dashed var(--line); font-size:13px; color:var(--ink-soft); display:flex; justify-content:space-between; gap:10px}
 .month-left b{color:var(--ink)}
 
@@ -248,12 +258,12 @@ body{
 form.add{display:grid; gap:10px; padding:14px; border-radius:var(--r-md); background:var(--glass-strong); border:1px solid var(--glass-brd); margin-bottom:14px; align-items:end}
 form.add[data-kind="incomes"]{grid-template-columns:minmax(0,2fr) minmax(0,1fr) auto}
 form.add[data-kind="expenses"]{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr) minmax(0,1.2fr) minmax(0,.7fr) auto}
-form.add[data-kind="investments"]{grid-template-columns:minmax(0,1.4fr) minmax(0,1.1fr) repeat(3,minmax(0,1fr)) auto}
+form.add[data-kind="investments"]{grid-template-columns:minmax(0,1.4fr) minmax(0,1.1fr) repeat(3,minmax(0,1fr)) minmax(0,.6fr) auto}
 form.add.editing{box-shadow:0 0 0 2px var(--accent)}
 .f{display:flex; flex-direction:column; gap:5px; min-width:0}
 .f label{font-size:11.5px; font-weight:700; letter-spacing:.04em; color:var(--ink-soft)}
 .f input,.f select{
-  font:inherit; font-size:14.5px; color:var(--ink); background:var(--field);
+  font:inherit; font-size:16px; color:var(--ink); background:var(--field);
   border:1px solid var(--line); border-radius:var(--r-sm); padding:10px 12px; width:100%; min-width:0;
   transition:border-color .2s, box-shadow .2s}
 .f input:focus,.f select:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent)}
@@ -366,6 +376,14 @@ form.add.editing{box-shadow:0 0 0 2px var(--accent)}
       </div>
       <p class="big num" id="restBig">0 €</p>
       <p class="hero-sub" id="restSub">Ajoutez votre salaire pour voir ce qu'il vous reste après les prélèvements et l'épargne.</p>
+      <div class="bal">
+        <div class="f"><label for="balInput">Solde du compte aujourd'hui</label><div class="eur"><input id="balInput" inputmode="decimal" placeholder="1 240" autocomplete="off" enterkeyhint="done"></div></div>
+        <div class="bal-out">
+          <div class="bal-k" id="balK">Disponible jusqu'à la fin du mois</div>
+          <div class="bal-v num" id="balAvail">—</div>
+          <div class="bal-s" id="balHint">Indiquez votre solde : le niveau tiendra compte des jours restants et des prélèvements à venir.</div>
+        </div>
+      </div>
       <div class="kpis">
         <div class="kpi"><div class="k">Revenus</div><div class="v num" id="kIncome">0 €</div><div class="s" id="kIncomeS">par mois</div></div>
         <div class="kpi"><div class="k">Dépenses fixes</div><div class="v num" id="kFixed">0 €</div><div class="s" id="kFixedS">—</div></div>
@@ -375,7 +393,7 @@ form.add.editing{box-shadow:0 0 0 2px var(--accent)}
     </div>
     <div class="gauge" role="img" id="gaugeBox" aria-label="Part du salaire restante">
       <canvas id="gauge"></canvas>
-      <div class="gauge-label"><span class="p num" id="gaugePct">0 %</span><span class="t" id="gaugeT">du salaire</span></div>
+      <div class="gauge-label"><span class="p num" id="gaugePct">0 %</span><span class="t" id="gaugeT">du salaire restant</span></div>
     </div>
   </section>
 
@@ -389,7 +407,7 @@ form.add.editing{box-shadow:0 0 0 2px var(--accent)}
     <section class="glass card" aria-labelledby="upTitle">
       <div class="card-h"><h2 id="upTitle">Prochains prélèvements</h2><span class="aside" id="upAside"></span></div>
       <ul class="upcoming" id="upcoming"></ul>
-      <p class="empty-note" id="upEmpty" hidden>Ajoutez une dépense avec son jour de prélèvement pour la voir ici.</p>
+      <p class="empty-note" id="upEmpty" hidden>Ajoutez une dépense ou un placement avec son jour pour le voir ici.</p>
       <div class="month-left" id="monthLeft" hidden><span>Encore à prélever ce mois-ci</span><b class="num" id="monthLeftV"></b></div>
     </section>
   </div>
@@ -444,6 +462,7 @@ form.add.editing{box-shadow:0 0 0 2px var(--accent)}
         <div class="f"><label for="inv-invested">Total versé</label><div class="eur"><input id="inv-invested" name="invested" inputmode="decimal" placeholder="3 600" autocomplete="off"></div></div>
         <div class="f"><label for="inv-value">Valeur actuelle</label><div class="eur"><input id="inv-value" name="value" inputmode="decimal" placeholder="4 210" autocomplete="off"></div></div>
         <div class="f"><label for="inv-monthly">Versement / mois</label><div class="eur"><input id="inv-monthly" name="monthly" inputmode="decimal" placeholder="150" autocomplete="off"></div></div>
+        <div class="f"><label for="inv-day">Jour</label><input id="inv-day" name="day" type="number" min="1" max="31" inputmode="numeric" placeholder="10"></div>
         <div class="actions"><button class="btn btn-ghost" type="button" data-cancel hidden>Annuler</button><button class="btn btn-primary" type="submit" data-submit>Ajouter</button></div>
       </form>
       <ul class="list" id="l-investments"></ul>
@@ -510,15 +529,23 @@ function esc(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;"
 function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
 function initials(s){ const w=String(s).trim().split(/\s+/); return ((w[0]||"?")[0]+((w[1]||"")[0]||"")).toUpperCase(); }
 
+function normBal(b){
+  if(!b || typeof b!=="object") return null;
+  const a = Number(b.amount);
+  if(!isFinite(a) || !/^\d{4}-\d{2}-\d{2}$/.test(String(b.date))) return null;
+  return {amount:a, date:String(b.date)};
+}
+function isoDay(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
 function normalize(d){
   d = d||{};
   const arr = a => Array.isArray(a)?a:[];
   return {
     name: (typeof d.name==="string" && d.name.trim()) ? d.name.trim().slice(0,40) : DEFAULT_NAME,
+    balance: normBal(d.balance),
     example: !!d.example,
     incomes: arr(d.incomes).map(x=>({id:String(x.id||uid()),label:String(x.label||"Revenu"),amount:+x.amount||0})),
     expenses: arr(d.expenses).map(x=>({id:String(x.id||uid()),label:String(x.label||"Dépense"),amount:+x.amount||0,cat:catById[x.cat]?x.cat:"autre",day:Math.min(31,Math.max(0,parseInt(x.day)||0))})),
-    investments: arr(d.investments).map(x=>({id:String(x.id||uid()),label:String(x.label||"Placement"),type:TYPES.includes(x.type)?x.type:"Autre",invested:+x.invested||0,value:+x.value||0,monthly:+x.monthly||0}))
+    investments: arr(d.investments).map(x=>({id:String(x.id||uid()),label:String(x.label||"Placement"),type:TYPES.includes(x.type)?x.type:"Autre",invested:+x.invested||0,value:+x.value||0,monthly:+x.monthly||0,day:Math.min(31,Math.max(0,parseInt(x.day)||0))}))
   };
 }
 function isEmpty(s){ return !s.incomes.length && !s.expenses.length && !s.investments.length; }
@@ -545,7 +572,7 @@ async function flush(){
     dirty = false;
     setSync("busy","Enregistrement…");
     try{
-      await ref.set({name:state.name, example:state.example, incomes:state.incomes, expenses:state.expenses, investments:state.investments, updatedAt:Date.now()});
+      await ref.set({name:state.name, balance:state.balance||null, example:state.example, incomes:state.incomes, expenses:state.expenses, investments:state.investments, updatedAt:Date.now()});
       setSync("ok","Sauvegardé");
     }catch(e){
       setSync("err","Échec de la sauvegarde, réessayez");
@@ -603,6 +630,56 @@ function nextDate(day, today){
   return d;
 }
 
+/* ---------- Niveaux ---------- */
+/* Seuils pour un mois entier ; ils baissent au prorata des jours restants. */
+const LEVELS = [
+  {min:1000, label:"Confortable", cls:"good"},
+  {min:500,  label:"Équilibré",   cls:"ok"},
+  {min:200,  label:"Serré",       cls:"warn"},
+  {min:0,    label:"Critique",    cls:"crit"}
+];
+function levelFor(amount, factor){
+  if(amount < 0) return {label:"Déficit", cls:"crit"};
+  for(const L of LEVELS){ if(amount >= Math.round(L.min*factor)) return L; }
+  return LEVELS[LEVELS.length-1];
+}
+function scheduled(){
+  const out = [];
+  for(const x of state.expenses) if(x.day>=1) out.push({kind:"exp", label:x.label, amount:x.amount, day:x.day, sub:catById[x.cat].name, color:"var("+catById[x.cat].c+")"});
+  for(const x of state.investments) if(x.day>=1 && x.monthly>0) out.push({kind:"inv", label:x.label, amount:x.monthly, day:x.day, sub:"Placement · "+x.type, color:"var(--inv)"});
+  return out;
+}
+function balanceView(today){
+  const b = state.balance; if(!b) return null;
+  const [y,m,d] = b.date.split("-").map(Number);
+  const entered = new Date(y, m-1, d);
+  if(y!==today.getFullYear() || m-1!==today.getMonth()) return {stale:true, entered};
+  const dim = new Date(today.getFullYear(), today.getMonth()+1, 0).getDate();
+  const bDay = Math.min(d, today.getDate());
+  const due = scheduled().filter(x=>Math.min(x.day, dim) > bDay);
+  const after = due.reduce((a,x)=>a+x.amount, 0);
+  const daysLeft = dim - today.getDate() + 1;
+  return {stale:false, available:b.amount-after, after, count:due.length, daysLeft, dim, factor:daysLeft/dim, bDay, isToday:d===today.getDate()};
+}
+function renderBalance(bv, today){
+  const inp = $("balInput"), av = $("balAvail"), hint = $("balHint");
+  const end = new Date(today.getFullYear(), today.getMonth()+1, 0);
+  $("balK").textContent = "Disponible jusqu'au " + end.toLocaleDateString("fr-FR",{day:"numeric", month:"long"});
+  if(document.activeElement !== inp) inp.value = (bv && !bv.stale) ? String(state.balance.amount).replace(".",",") : "";
+  av.classList.remove("neg");
+  if(!bv){ av.textContent = "—"; hint.textContent = "Indiquez votre solde : le niveau tiendra compte des jours restants et des prélèvements à venir."; return; }
+  if(bv.stale){ av.textContent = "—"; hint.textContent = "Votre dernier solde date du "+bv.entered.toLocaleDateString("fr-FR",{day:"numeric", month:"long"})+". Saisissez celui d'aujourd'hui."; return; }
+  av.textContent = eur(bv.available);
+  av.classList.toggle("neg", bv.available < 0);
+  const parts = [];
+  parts.push(bv.count ? eur(bv.after)+" encore à prélever après le "+bv.bDay : "Plus aucun prélèvement prévu ce mois-ci");
+  parts.push(bv.daysLeft+" jour"+(bv.daysLeft>1?"s":"")+" restant"+(bv.daysLeft>1?"s":""));
+  if(!bv.isToday) parts.push("solde saisi le "+bv.bDay);
+  const noDay = state.expenses.filter(x=>!x.day).length;
+  if(noDay) parts.push(noDay+" dépense"+(noDay>1?"s":"")+" sans jour non comptée"+(noDay>1?"s":""));
+  hint.textContent = parts.join(" · ");
+}
+
 /* ---------- Rendu ---------- */
 let gaugeTarget = 0, gaugeNeg = false;
 
@@ -623,11 +700,18 @@ function render(){
   big.textContent = eur(t.rest);
   big.classList.toggle("neg", t.rest < 0);
   const pill = $("restPill");
-  if(t.income <= 0){ pill.className="pill neutral"; pill.textContent="À compléter"; }
-  else if(t.rest < 0){ pill.className="pill crit"; pill.textContent="Déficit"; }
-  else if(t.ratio < .1){ pill.className="pill warn"; pill.textContent="Serré"; }
-  else if(t.ratio < .25){ pill.className="pill good"; pill.textContent="Équilibré"; }
-  else { pill.className="pill good"; pill.textContent="Confortable"; }
+  const bv = balanceView(today);
+  renderBalance(bv, today);
+  let lv = null;
+  if(bv && !bv.stale) lv = levelFor(bv.available, bv.factor);
+  else if(t.income > 0) lv = levelFor(t.rest, 1);
+  if(!lv){ pill.className="pill neutral"; pill.textContent="À compléter"; pill.title=""; }
+  else {
+    pill.className = "pill "+lv.cls; pill.textContent = lv.label;
+    pill.title = (bv && !bv.stale)
+      ? "Selon votre disponible de "+eur(bv.available)+" pour "+bv.daysLeft+" jour"+(bv.daysLeft>1?"s":"")+" restant"+(bv.daysLeft>1?"s":"")
+      : "Selon votre reste à vivre mensuel";
+  }
 
   $("restSub").innerHTML = t.income>0
     ? `Sur <b class="num">${eur(t.income)}</b> de revenus, il reste ce montant après <b class="num">${eur(t.fixed)}</b> de dépenses fixes et <b class="num">${eur(t.invM)}</b> mis de côté.`
@@ -647,7 +731,7 @@ function render(){
   gaugeTarget = t.income>0 ? Math.max(0, Math.min(1, t.ratio)) : 0;
   gaugeNeg = t.rest < 0;
   $("gaugePct").textContent = t.income>0 ? pct(Math.max(t.ratio,-9.99)) : "—";
-  $("gaugeT").textContent = gaugeNeg ? "de dépassement" : "du salaire reste";
+  $("gaugeT").textContent = gaugeNeg ? "de dépassement" : "du salaire restant";
   if(gaugeNeg) $("gaugePct").textContent = pct(Math.abs(t.ratio));
   $("gaugeBox").setAttribute("aria-label", t.income>0 ? (gaugeNeg? "Dépassement de "+pct(Math.abs(t.ratio))+" des revenus" : pct(t.ratio)+" des revenus restent disponibles") : "Aucun revenu saisi");
 
@@ -680,28 +764,28 @@ function renderFlow(t){
     legend.appendChild(d);
   };
   for(const c of cats) item(`var(${c.c})`, c.name, c.total, t.income? c.total/t.income : null);
-  if(t.invM>0) item("linear-gradient(90deg,var(--accent),var(--accent-2))","Placements",t.invM, t.income? t.invM/t.income:null);
+  if(t.invM>0) item("var(--inv)","Placements",t.invM, t.income? t.invM/t.income:null);
   if(t.income>0) item(t.rest>=0?"var(--good)":"var(--crit)", t.rest>=0?"Reste à vivre":"Dépassement", Math.abs(t.rest), null);
 }
 
 function renderUpcoming(today){
   const ul = $("upcoming"); ul.innerHTML = "";
-  const withDay = state.expenses.filter(x=>x.day>=1);
-  $("upEmpty").hidden = withDay.length>0;
+  const all = scheduled();
+  $("upEmpty").hidden = all.length>0;
   const t0 = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  const items = withDay.map(x=>({...x, date:nextDate(x.day,today)})).sort((a,b)=>a.date-b.date || b.amount-a.amount);
-  for(const x of items.slice(0,5)){
+  const items = all.map(x=>({...x, date:nextDate(x.day,today)})).sort((a,b)=>a.date-b.date || b.amount-a.amount);
+  for(const x of items.slice(0,6)){
     const days = Math.round((x.date - t0)/86400000);
     const when = days===0 ? "Aujourd'hui" : days===1 ? "Demain" : "Dans "+days+" jours";
     const li=document.createElement("li");
-    li.innerHTML = `<div class="date-chip"><b class="num">${x.date.getDate()}</b><small>${x.date.toLocaleDateString("fr-FR",{month:"short"}).replace(".","")}</small></div>
-      <div style="min-width:0"><div class="up-name">${esc(x.label)}</div><div class="up-when">${when} · ${esc(catById[x.cat].name)}</div></div>
-      <div class="up-amt num">−${eur(x.amount)}</div>`;
+    li.innerHTML = `<div class="date-chip" style="box-shadow:inset 0 -4px 0 ${x.color}"><b class="num">${x.date.getDate()}</b><small>${x.date.toLocaleDateString("fr-FR",{month:"short"}).replace(".","")}</small></div>
+      <div style="min-width:0"><div class="up-name">${esc(x.label)}</div><div class="up-when">${when} · ${esc(x.sub)}</div></div>
+      <div class="up-amt num${x.kind==="inv"?" inv":""}">${x.kind==="inv"?"→ ":"−"}${eur(x.amount)}</div>`;
     ul.appendChild(li);
   }
-  $("upAside").textContent = withDay.length>5 ? "5 sur "+withDay.length : "";
-  const leftThisMonth = withDay.filter(x=>{ const d=nextDate(x.day,today); return d.getMonth()===today.getMonth() && d.getFullYear()===today.getFullYear(); }).reduce((a,x)=>a+x.amount,0);
-  $("monthLeft").hidden = withDay.length===0;
+  $("upAside").textContent = all.length>6 ? "6 sur "+all.length : "";
+  const leftThisMonth = items.filter(x=>x.date.getMonth()===today.getMonth() && x.date.getFullYear()===today.getFullYear()).reduce((a,x)=>a+x.amount,0);
+  $("monthLeft").hidden = all.length===0;
   $("monthLeftV").textContent = eur(leftThisMonth);
 }
 
@@ -755,11 +839,23 @@ function renderLists(t){
     const g = x.value - x.invested, gp = x.invested>0 ? g/x.invested : null;
     const el=document.createElement("li"); el.className="item";
     el.innerHTML = `<div class="ic" style="background:linear-gradient(140deg,var(--accent-2),var(--accent))">${esc(initials(x.type))}</div>
-      <div style="min-width:0"><div class="it-name">${esc(x.label)}</div><div class="it-meta"><span>${esc(x.type)}</span><span>Versé ${eur(x.invested)}</span>${x.monthly>0?`<span>+${eur(x.monthly)} / mois</span>`:""}</div></div>
+      <div style="min-width:0"><div class="it-name">${esc(x.label)}</div><div class="it-meta"><span>${esc(x.type)}</span><span>Versé ${eur(x.invested)}</span>${x.monthly>0?`<span>+${eur(x.monthly)} / mois${x.day?" · le "+x.day:""}</span>`:""}</div></div>
       <div class="it-amt num">${eur(x.value)}<small class="${g>=0?"up":"down"}">${signedEur(g)}${gp!=null?" · "+(g>=0?"+":"−")+pct(Math.abs(gp)):""}</small></div>${actionsHTML("investments",x.id,x.label)}`;
     lv.appendChild(el);
   }
 }
+
+/* ---------- Solde du compte ---------- */
+$("balInput").addEventListener("change", e=>{
+  const raw = e.target.value.trim();
+  if(raw===""){ if(state.balance){ state.balance = null; render(); persist(); } return; }
+  const v = parseNum(raw.replace("−","-"));
+  if(!isFinite(v)){ $("balHint").textContent = "Montant non reconnu. Exemple : 1240 ou 1 240,50."; return; }
+  state.balance = {amount:Math.round(v*100)/100, date:isoDay(new Date())};
+  render(); persist();
+});
+$("balInput").addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); e.target.blur(); } });
+document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) render(); });
 
 /* ---------- Nom du tableau ---------- */
 function fitName(){ const ni=$("appName"); ni.style.width = Math.max(6, ni.value.length + 1) + "ch"; }
@@ -843,7 +939,9 @@ function readForm(kind){
   if(value<0) return {err:"La valeur actuelle ne peut pas être négative."};
   const monthly = isNaN(monthlyRaw) ? 0 : monthlyRaw;
   if(monthly<0) return {err:"Le versement mensuel ne peut pas être négatif."};
-  return {item:{label, type:String(fd.get("type")), invested, value, monthly}};
+  const dayRaw = String(fd.get("day")||"").trim(); const day = dayRaw===""?0:parseInt(dayRaw,10);
+  if(dayRaw!=="" && !(day>=1 && day<=31)) return {err:"Le jour du versement doit être entre 1 et 31, ou laissé vide."};
+  return {item:{label, type:String(fd.get("type")), invested, value, monthly, day}};
 }
 function dropExampleFlag(){ if(state.example) state.example = false; }
 
@@ -861,7 +959,8 @@ function dropExampleFlag(){ if(state.example) state.example = false; }
     }
     resetForm(kind);
     render(); persist();
-    form.querySelector("input").focus();
+    if(matchMedia("(pointer: coarse)").matches){ if(document.activeElement) document.activeElement.blur(); }
+    else form.querySelector("input").focus();
   });
   form.querySelector("[data-cancel]").addEventListener("click",()=>resetForm(kind));
 });
@@ -971,7 +1070,7 @@ selectTab(savedTab);
 requestAnimationFrame(draw);
 /* ---------- Sauvegarde / restauration ---------- */
 $("exportBtn").addEventListener("click", ()=>{
-  const data = JSON.stringify({app:"budget-liquide", version:1, exportedAt:new Date().toISOString(), name:state.name, incomes:state.incomes, expenses:state.expenses, investments:state.investments}, null, 2);
+  const data = JSON.stringify({app:"budget-liquide", version:1, exportedAt:new Date().toISOString(), name:state.name, balance:state.balance, incomes:state.incomes, expenses:state.expenses, investments:state.investments}, null, 2);
   const fname = "dashboard-budget-" + new Date().toISOString().slice(0,10) + ".json";
   const blob = new Blob([data], {type:"application/json"});
   try{
