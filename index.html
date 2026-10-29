@@ -29,6 +29,8 @@ body{margin:0}
 /* Layout : un « verre » héros (reste à vivre + jauge liquide), une rangée flux/prélèvements, puis un panneau à onglets pour saisir. Fond de gouttes qui se déforment lentement derrière du verre dépoli. */
 :root{
   --bg:#E8EDF4;
+  --bg-bottom:#F4D9CF;
+  --glass-solid:rgba(255,255,255,.68);
   --ink:#111827;
   --ink-soft:#56617A;
   --ink-faint:#8A93A8;
@@ -51,15 +53,15 @@ body{margin:0}
   --good:#12955F; --good-bg:rgba(18,149,95,.12);
   --warn:#B9740A; --warn-bg:rgba(231,154,30,.16);
   --crit:#D2423A; --crit-bg:rgba(226,86,75,.13);
-  --c1:#2563EB; --c2:#DC2626; --c3:#F97316; --c4:#7C3AED; --c5:#EAB308;
-  --c6:#0EA5E9; --c7:#DB2777; --c8:#65A30D; --c9:#A16207; --c10:#94A3B8; --inv:#1F2937;
+  --c1:#3B82F6; --c2:#E11D48; --c3:#FF8A5B; --c4:#8B5CF6; --c5:#FACC15;
+  --c6:#84CC16; --c7:#EC4899; --c8:#4F46E5; --c9:#B45309; --c10:#94A3B8; --inv:#2CC4B0;
   --font-display:"Unbounded","Arial Rounded MT Bold","Trebuchet MS",system-ui,sans-serif;
   --font-body:"Manrope","Segoe UI",system-ui,-apple-system,sans-serif;
   --r-lg:28px; --r-md:18px; --r-sm:12px;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#090E1A; --ink:#EEF2FA; --ink-soft:#A1ABC1; --ink-faint:#6E7891;
+    --bg:#090E1A; --bg-bottom:#1E1322; --glass-solid:rgba(22,28,46,.76); --ink:#EEF2FA; --ink-soft:#A1ABC1; --ink-faint:#6E7891;
     --glass:rgba(255,255,255,.055); --glass-strong:rgba(255,255,255,.09);
     --glass-brd:rgba(255,255,255,.12); --glass-hi:rgba(255,255,255,.14);
     --line:rgba(255,255,255,.08); --field:rgba(255,255,255,.06); --shadow:rgba(0,0,0,.45);
@@ -69,13 +71,13 @@ body{margin:0}
     --good:#45D995; --good-bg:rgba(69,217,149,.14);
     --warn:#F2B451; --warn-bg:rgba(242,180,81,.15);
     --crit:#FF7D72; --crit-bg:rgba(255,125,114,.15);
-    --c1:#60A5FA; --c2:#F87171; --c3:#FB923C; --c4:#A78BFA; --c5:#FDE047;
-    --c6:#38BDF8; --c7:#F472B6; --c8:#A3E635; --c9:#D6A35C; --c10:#64748B; --inv:#F1F5F9;
+    --c1:#60A5FA; --c2:#FB7185; --c3:#FFA07A; --c4:#A78BFA; --c5:#FDE047;
+    --c6:#A3E635; --c7:#F472B6; --c8:#818CF8; --c9:#D6A35C; --c10:#64748B; --inv:#5EEAD4;
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#090E1A; --ink:#EEF2FA; --ink-soft:#A1ABC1; --ink-faint:#6E7891;
+  --bg:#090E1A; --bg-bottom:#1E1322; --glass-solid:rgba(22,28,46,.76); --ink:#EEF2FA; --ink-soft:#A1ABC1; --ink-faint:#6E7891;
   --glass:rgba(255,255,255,.055); --glass-strong:rgba(255,255,255,.09);
   --glass-brd:rgba(255,255,255,.12); --glass-hi:rgba(255,255,255,.14);
   --line:rgba(255,255,255,.08); --field:rgba(255,255,255,.06); --shadow:rgba(0,0,0,.45);
@@ -85,14 +87,14 @@ body{margin:0}
   --good:#45D995; --good-bg:rgba(69,217,149,.14);
   --warn:#F2B451; --warn-bg:rgba(242,180,81,.15);
   --crit:#FF7D72; --crit-bg:rgba(255,125,114,.15);
-  --c1:#60A5FA; --c2:#F87171; --c3:#FB923C; --c4:#A78BFA; --c5:#FDE047;
-  --c6:#38BDF8; --c7:#F472B6; --c8:#A3E635; --c9:#D6A35C; --c10:#64748B; --inv:#F1F5F9;
+  --c1:#60A5FA; --c2:#FB7185; --c3:#FFA07A; --c4:#A78BFA; --c5:#FDE047;
+  --c6:#A3E635; --c7:#F472B6; --c8:#818CF8; --c9:#D6A35C; --c10:#64748B; --inv:#5EEAD4;
   color-scheme:dark;
 }
 
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%; text-size-adjust:100%; touch-action:manipulation; overscroll-behavior-y:none}
-button,input,select,label,a{touch-action:manipulation}
+html{background:var(--bg-bottom); -webkit-text-size-adjust:100%; text-size-adjust:100%}
+button,label{touch-action:manipulation}
 body{
   background:var(--bg); color:var(--ink);
   font-family:var(--font-body); font-size:15px; line-height:1.5;
@@ -102,26 +104,28 @@ body{
 .num{font-variant-numeric:tabular-nums}
 
 /* ---------- Fond liquide ---------- */
-.liquid-bg{position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none}
-.blob{position:absolute; filter:blur(70px); opacity:.85; will-change:transform,border-radius}
-.blob.b1{width:520px; height:520px; left:-120px; top:-140px; background:var(--blob1);
-  border-radius:42% 58% 63% 37% / 41% 44% 56% 59%; animation:morph1 22s ease-in-out infinite alternate}
-.blob.b2{width:460px; height:460px; right:-120px; top:18%; background:var(--blob3);
-  border-radius:60% 40% 30% 70% / 60% 30% 70% 40%; animation:morph2 26s ease-in-out infinite alternate}
-.blob.b3{width:420px; height:420px; left:22%; bottom:-180px; background:var(--blob2);
-  border-radius:38% 62% 46% 54% / 55% 38% 62% 45%; animation:morph3 30s ease-in-out infinite alternate}
+.liquid-bg{position:fixed; left:0; right:0; top:-20vh; bottom:-20vh; z-index:0; overflow:hidden; pointer-events:none;
+  background:linear-gradient(180deg,var(--bg) 0%,var(--bg) 50%,var(--bg-bottom) 100%)}
+/* Gouttes en dégradé radial : seules leurs transformations s'animent (calcul GPU, fluide sur téléphone). */
+.blob{position:absolute; border-radius:50%; opacity:.9; will-change:transform; transform:translateZ(0)}
+.blob.b1{width:640px; height:640px; left:-220px; top:-80px; background:radial-gradient(closest-side,var(--blob1),transparent);
+  animation:morph1 24s ease-in-out infinite alternate}
+.blob.b2{width:580px; height:580px; right:-220px; top:30%; background:radial-gradient(closest-side,var(--blob3),transparent);
+  animation:morph2 28s ease-in-out infinite alternate}
+.blob.b3{width:560px; height:560px; left:10%; bottom:-120px; background:radial-gradient(closest-side,var(--blob2),transparent);
+  animation:morph3 32s ease-in-out infinite alternate}
 @keyframes morph1{
-  0%{transform:translate(0,0) rotate(0deg); border-radius:42% 58% 63% 37% / 41% 44% 56% 59%}
-  50%{transform:translate(80px,60px) rotate(40deg); border-radius:63% 37% 41% 59% / 58% 62% 38% 42%}
-  100%{transform:translate(30px,140px) rotate(80deg); border-radius:35% 65% 55% 45% / 45% 35% 65% 55%}}
+  0%{transform:translate3d(0,0,0) rotate(0deg) scale(1,1)}
+  50%{transform:translate3d(80px,60px,0) rotate(30deg) scale(1.18,.86)}
+  100%{transform:translate3d(30px,140px,0) rotate(70deg) scale(.92,1.12)}}
 @keyframes morph2{
-  0%{transform:translate(0,0) rotate(0deg); border-radius:60% 40% 30% 70% / 60% 30% 70% 40%}
-  50%{transform:translate(-90px,40px) rotate(-30deg); border-radius:40% 60% 70% 30% / 40% 70% 30% 60%}
-  100%{transform:translate(-40px,-60px) rotate(-70deg); border-radius:55% 45% 40% 60% / 50% 55% 45% 50%}}
+  0%{transform:translate3d(0,0,0) rotate(0deg) scale(1,1)}
+  50%{transform:translate3d(-90px,40px,0) rotate(-25deg) scale(.88,1.16)}
+  100%{transform:translate3d(-40px,-60px,0) rotate(-60deg) scale(1.12,.94)}}
 @keyframes morph3{
-  0%{transform:translate(0,0) rotate(0deg); border-radius:38% 62% 46% 54% / 55% 38% 62% 45%}
-  50%{transform:translate(120px,-50px) rotate(50deg); border-radius:58% 42% 64% 36% / 40% 60% 40% 60%}
-  100%{transform:translate(-60px,-110px) rotate(100deg); border-radius:46% 54% 38% 62% / 62% 46% 54% 38%}}
+  0%{transform:translate3d(0,0,0) rotate(0deg) scale(1,1)}
+  50%{transform:translate3d(110px,-50px,0) rotate(40deg) scale(1.15,.9)}
+  100%{transform:translate3d(-60px,-100px,0) rotate(90deg) scale(.9,1.1)}}
 
 /* ---------- Structure ---------- */
 .wrap{
@@ -184,13 +188,7 @@ body{
 .hero-title-row{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:6px}
 .hero-title-row .eyebrow{margin:0}
 
-.bal{display:grid; grid-template-columns:minmax(0,210px) minmax(0,1fr); gap:18px; align-items:center; margin-top:18px; padding:14px 16px; border-radius:var(--r-md); background:var(--glass-strong); border:1px solid var(--glass-brd)}
-.bal-k{font-size:12px; color:var(--ink-soft); font-weight:600}
-.bal-v{font-family:var(--font-display); font-weight:600; font-size:24px; letter-spacing:-.02em; line-height:1.2}
-.bal-v.neg{color:var(--crit)}
-.bal-s{font-size:12.5px; color:var(--ink-soft); margin-top:2px}
 .pill.ok{background:color-mix(in srgb,var(--c1) 14%,transparent); color:var(--c1)}
-@media (max-width:520px){ .bal{grid-template-columns:minmax(0,1fr); gap:10px} }
 .kpis{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-top:22px}
 .kpi{padding:12px 14px; border-radius:var(--r-md); background:var(--glass-strong); border:1px solid var(--glass-brd); min-width:0}
 .kpi .k{font-size:12px; color:var(--ink-soft); font-weight:600}
@@ -232,7 +230,7 @@ body{
 .up-name{font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 .up-when{font-size:12px; color:var(--ink-soft)}
 .up-amt{font-weight:700; white-space:nowrap}
-.up-amt.inv{color:var(--inv)}
+.up-amt.inv{color:color-mix(in srgb,var(--inv) 65%,var(--ink))}
 .month-left{margin-top:12px; padding-top:12px; border-top:1px dashed var(--line); font-size:13px; color:var(--ink-soft); display:flex; justify-content:space-between; gap:10px}
 .month-left b{color:var(--ink)}
 
@@ -337,6 +335,11 @@ form.add.editing{box-shadow:0 0 0 2px var(--accent)}
 @media (max-width:420px){
   form.add[data-kind="expenses"],form.add[data-kind="investments"]{grid-template-columns:minmax(0,1fr)}
 }
+/* Sur téléphone : pas de flou d'arrière-plan (trop coûteux au défilement), verre plus opaque à la place. */
+@media (pointer:coarse), (max-width:720px){
+  .glass,.sync,.seg-ind{backdrop-filter:none; -webkit-backdrop-filter:none}
+  .glass{background:var(--glass-solid)}
+}
 @media (prefers-reduced-motion: reduce){
   .blob,.drop,.empty .em-blob{animation:none}
   .seg-ind,.flow span,.btn{transition:none}
@@ -376,14 +379,6 @@ form.add.editing{box-shadow:0 0 0 2px var(--accent)}
       </div>
       <p class="big num" id="restBig">0 €</p>
       <p class="hero-sub" id="restSub">Ajoutez votre salaire pour voir ce qu'il vous reste après les prélèvements et l'épargne.</p>
-      <div class="bal">
-        <div class="f"><label for="balInput">Solde du compte aujourd'hui</label><div class="eur"><input id="balInput" inputmode="decimal" placeholder="1 240" autocomplete="off" enterkeyhint="done"></div></div>
-        <div class="bal-out">
-          <div class="bal-k" id="balK">Disponible jusqu'à la fin du mois</div>
-          <div class="bal-v num" id="balAvail">—</div>
-          <div class="bal-s" id="balHint">Indiquez votre solde : le niveau tiendra compte des jours restants et des prélèvements à venir.</div>
-        </div>
-      </div>
       <div class="kpis">
         <div class="kpi"><div class="k">Revenus</div><div class="v num" id="kIncome">0 €</div><div class="s" id="kIncomeS">par mois</div></div>
         <div class="kpi"><div class="k">Dépenses fixes</div><div class="v num" id="kFixed">0 €</div><div class="s" id="kFixedS">—</div></div>
@@ -469,7 +464,7 @@ form.add.editing{box-shadow:0 0 0 2px var(--accent)}
     </div>
   </section>
 
-  <p class="foot" id="foot">Fonctionne sans connexion. Vos chiffres restent sur cet appareil et ne sont envoyés nulle part. Pensez à exporter une sauvegarde de temps en temps.</p>
+  <p class="foot" id="foot">Fonctionne sans connexion. Vos chiffres restent sur cet appareil et ne sont envoyés nulle part. Pensez à exporter une sauvegarde de temps en temps. · Version 6</p>
 </main>
 
 <script>
@@ -529,19 +524,11 @@ function esc(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;"
 function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
 function initials(s){ const w=String(s).trim().split(/\s+/); return ((w[0]||"?")[0]+((w[1]||"")[0]||"")).toUpperCase(); }
 
-function normBal(b){
-  if(!b || typeof b!=="object") return null;
-  const a = Number(b.amount);
-  if(!isFinite(a) || !/^\d{4}-\d{2}-\d{2}$/.test(String(b.date))) return null;
-  return {amount:a, date:String(b.date)};
-}
-function isoDay(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
 function normalize(d){
   d = d||{};
   const arr = a => Array.isArray(a)?a:[];
   return {
     name: (typeof d.name==="string" && d.name.trim()) ? d.name.trim().slice(0,40) : DEFAULT_NAME,
-    balance: normBal(d.balance),
     example: !!d.example,
     incomes: arr(d.incomes).map(x=>({id:String(x.id||uid()),label:String(x.label||"Revenu"),amount:+x.amount||0})),
     expenses: arr(d.expenses).map(x=>({id:String(x.id||uid()),label:String(x.label||"Dépense"),amount:+x.amount||0,cat:catById[x.cat]?x.cat:"autre",day:Math.min(31,Math.max(0,parseInt(x.day)||0))})),
@@ -572,7 +559,7 @@ async function flush(){
     dirty = false;
     setSync("busy","Enregistrement…");
     try{
-      await ref.set({name:state.name, balance:state.balance||null, example:state.example, incomes:state.incomes, expenses:state.expenses, investments:state.investments, updatedAt:Date.now()});
+      await ref.set({name:state.name, example:state.example, incomes:state.incomes, expenses:state.expenses, investments:state.investments, updatedAt:Date.now()});
       setSync("ok","Sauvegardé");
     }catch(e){
       setSync("err","Échec de la sauvegarde, réessayez");
@@ -631,7 +618,7 @@ function nextDate(day, today){
 }
 
 /* ---------- Niveaux ---------- */
-/* Seuils pour un mois entier ; ils baissent au prorata des jours restants. */
+/* Seuils appliqués au reste à vivre mensuel. */
 const LEVELS = [
   {min:1000, label:"Confortable", cls:"good"},
   {min:500,  label:"Équilibré",   cls:"ok"},
@@ -648,36 +635,6 @@ function scheduled(){
   for(const x of state.expenses) if(x.day>=1) out.push({kind:"exp", label:x.label, amount:x.amount, day:x.day, sub:catById[x.cat].name, color:"var("+catById[x.cat].c+")"});
   for(const x of state.investments) if(x.day>=1 && x.monthly>0) out.push({kind:"inv", label:x.label, amount:x.monthly, day:x.day, sub:"Placement · "+x.type, color:"var(--inv)"});
   return out;
-}
-function balanceView(today){
-  const b = state.balance; if(!b) return null;
-  const [y,m,d] = b.date.split("-").map(Number);
-  const entered = new Date(y, m-1, d);
-  if(y!==today.getFullYear() || m-1!==today.getMonth()) return {stale:true, entered};
-  const dim = new Date(today.getFullYear(), today.getMonth()+1, 0).getDate();
-  const bDay = Math.min(d, today.getDate());
-  const due = scheduled().filter(x=>Math.min(x.day, dim) > bDay);
-  const after = due.reduce((a,x)=>a+x.amount, 0);
-  const daysLeft = dim - today.getDate() + 1;
-  return {stale:false, available:b.amount-after, after, count:due.length, daysLeft, dim, factor:daysLeft/dim, bDay, isToday:d===today.getDate()};
-}
-function renderBalance(bv, today){
-  const inp = $("balInput"), av = $("balAvail"), hint = $("balHint");
-  const end = new Date(today.getFullYear(), today.getMonth()+1, 0);
-  $("balK").textContent = "Disponible jusqu'au " + end.toLocaleDateString("fr-FR",{day:"numeric", month:"long"});
-  if(document.activeElement !== inp) inp.value = (bv && !bv.stale) ? String(state.balance.amount).replace(".",",") : "";
-  av.classList.remove("neg");
-  if(!bv){ av.textContent = "—"; hint.textContent = "Indiquez votre solde : le niveau tiendra compte des jours restants et des prélèvements à venir."; return; }
-  if(bv.stale){ av.textContent = "—"; hint.textContent = "Votre dernier solde date du "+bv.entered.toLocaleDateString("fr-FR",{day:"numeric", month:"long"})+". Saisissez celui d'aujourd'hui."; return; }
-  av.textContent = eur(bv.available);
-  av.classList.toggle("neg", bv.available < 0);
-  const parts = [];
-  parts.push(bv.count ? eur(bv.after)+" encore à prélever après le "+bv.bDay : "Plus aucun prélèvement prévu ce mois-ci");
-  parts.push(bv.daysLeft+" jour"+(bv.daysLeft>1?"s":"")+" restant"+(bv.daysLeft>1?"s":""));
-  if(!bv.isToday) parts.push("solde saisi le "+bv.bDay);
-  const noDay = state.expenses.filter(x=>!x.day).length;
-  if(noDay) parts.push(noDay+" dépense"+(noDay>1?"s":"")+" sans jour non comptée"+(noDay>1?"s":""));
-  hint.textContent = parts.join(" · ");
 }
 
 /* ---------- Rendu ---------- */
@@ -700,18 +657,9 @@ function render(){
   big.textContent = eur(t.rest);
   big.classList.toggle("neg", t.rest < 0);
   const pill = $("restPill");
-  const bv = balanceView(today);
-  renderBalance(bv, today);
-  let lv = null;
-  if(bv && !bv.stale) lv = levelFor(bv.available, bv.factor);
-  else if(t.income > 0) lv = levelFor(t.rest, 1);
+  const lv = t.income > 0 ? levelFor(t.rest, 1) : null;
   if(!lv){ pill.className="pill neutral"; pill.textContent="À compléter"; pill.title=""; }
-  else {
-    pill.className = "pill "+lv.cls; pill.textContent = lv.label;
-    pill.title = (bv && !bv.stale)
-      ? "Selon votre disponible de "+eur(bv.available)+" pour "+bv.daysLeft+" jour"+(bv.daysLeft>1?"s":"")+" restant"+(bv.daysLeft>1?"s":"")
-      : "Selon votre reste à vivre mensuel";
-  }
+  else { pill.className = "pill "+lv.cls; pill.textContent = lv.label; pill.title = "Selon votre reste à vivre mensuel"; }
 
   $("restSub").innerHTML = t.income>0
     ? `Sur <b class="num">${eur(t.income)}</b> de revenus, il reste ce montant après <b class="num">${eur(t.fixed)}</b> de dépenses fixes et <b class="num">${eur(t.invM)}</b> mis de côté.`
@@ -845,16 +793,6 @@ function renderLists(t){
   }
 }
 
-/* ---------- Solde du compte ---------- */
-$("balInput").addEventListener("change", e=>{
-  const raw = e.target.value.trim();
-  if(raw===""){ if(state.balance){ state.balance = null; render(); persist(); } return; }
-  const v = parseNum(raw.replace("−","-"));
-  if(!isFinite(v)){ $("balHint").textContent = "Montant non reconnu. Exemple : 1240 ou 1 240,50."; return; }
-  state.balance = {amount:Math.round(v*100)/100, date:isoDay(new Date())};
-  render(); persist();
-});
-$("balInput").addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); e.target.blur(); } });
 document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) render(); });
 
 /* ---------- Nom du tableau ---------- */
@@ -1017,7 +955,12 @@ function blobPath(cx,cy,R,t){
   }
   ctx.closePath();
 }
+const COARSE = matchMedia("(pointer: coarse)").matches;
+let lastDraw = 0, gaugeVisible = true;
+new IntersectionObserver(es=>{ gaugeVisible = es[es.length-1].isIntersecting; if(gaugeVisible) kick(); }).observe(cv);
 function draw(ts){
+  if(COARSE && ts && ts - lastDraw < 33 && Math.abs(gaugeTarget-level) < .001){ requestAnimationFrame(draw); return; }
+  lastDraw = ts||0;
   const t = (reduce.matches ? 0 : (ts||0)/1000);
   if(frame++ % 90 === 0) readColors();
   const W=cv.width, H=cv.height, cx=W/2, cy=H/2, R=Math.min(W,H)*.43;
@@ -1047,7 +990,7 @@ function draw(ts){
   g.addColorStop(0,"rgba(255,255,255,.35)"); g.addColorStop(1,"rgba(255,255,255,0)");
   ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
   ctx.restore();
-  if(!reduce.matches || Math.abs(gaugeTarget-level)>.001) requestAnimationFrame(draw);
+  if(Math.abs(gaugeTarget-level)>.001 || (!reduce.matches && gaugeVisible && !document.hidden)) requestAnimationFrame(draw);
   else rafIdle = true;
 }
 let rafIdle = false;
@@ -1070,7 +1013,7 @@ selectTab(savedTab);
 requestAnimationFrame(draw);
 /* ---------- Sauvegarde / restauration ---------- */
 $("exportBtn").addEventListener("click", ()=>{
-  const data = JSON.stringify({app:"budget-liquide", version:1, exportedAt:new Date().toISOString(), name:state.name, balance:state.balance, incomes:state.incomes, expenses:state.expenses, investments:state.investments}, null, 2);
+  const data = JSON.stringify({app:"budget-liquide", version:1, exportedAt:new Date().toISOString(), name:state.name, incomes:state.incomes, expenses:state.expenses, investments:state.investments}, null, 2);
   const fname = "dashboard-budget-" + new Date().toISOString().slice(0,10) + ".json";
   const blob = new Blob([data], {type:"application/json"});
   try{
