@@ -438,6 +438,7 @@ body.sheet-open .fab{display:none}
 @media (max-width:900px){ .row-daily{grid-template-columns:minmax(0,1fr)} }
 @media (max-width:720px){ .today{padding:20px} }
 .mcard .card-h{align-items:center}
+.card-h h2{text-wrap:balance}
 .mgrid{display:grid; grid-template-columns:auto minmax(0,1fr); gap:26px; align-items:center}
 .mg .gauge-label .p{font-size:30px}
 .mg .gauge-label .t{letter-spacing:.04em; text-transform:none; font-size:12.5px; font-weight:600}
@@ -457,6 +458,11 @@ body.sheet-open .fab{display:none}
 .qseg button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
 .cats.invs{grid-template-columns:repeat(3,minmax(0,1fr))}
 .ditem .a.save{color:color-mix(in srgb,var(--inv) 65%,var(--ink))}
+.reset-row{display:flex; flex-wrap:wrap; align-items:center; gap:8px 10px; padding:12px 14px; border-radius:var(--r-md); background:var(--glass-strong); border:1px solid var(--glass-brd); margin-bottom:12px}
+.reset-row label{font-weight:700; font-size:14px}
+.reset-row input{width:74px; font:inherit; font-size:16px; color:var(--ink); background:var(--field); border:1px solid var(--line); border-radius:var(--r-sm); padding:8px 10px; text-align:center}
+.reset-row input:focus{outline:none; border-color:var(--accent)}
+.reset-hint{flex-basis:100%; font-size:12.5px; color:var(--ink-soft)}
 @media (prefers-reduced-motion: reduce){ .qseg-ind{transition:none} }
 @media (prefers-reduced-motion: reduce){
   .blob,.drop,.empty .em-blob{animation:none}
@@ -541,7 +547,7 @@ body.sheet-open .fab{display:none}
       <div class="card-h"><h2 id="upTitle">Prochains prélèvements</h2><span class="aside" id="upAside"></span></div>
       <ul class="upcoming" id="upcoming"></ul>
       <p class="empty-note" id="upEmpty" hidden>Ajoutez une dépense ou un placement avec son jour pour le voir ici.</p>
-      <div class="month-left" id="monthLeft" hidden><span>Encore à prélever ce mois-ci</span><b class="num" id="monthLeftV"></b></div>
+      <div class="month-left" id="monthLeft" hidden><span id="monthLeftL">Encore à prélever ce mois-ci</span><b class="num" id="monthLeftV"></b></div>
     </section>
   </div>
 
@@ -558,6 +564,11 @@ body.sheet-open .fab{display:none}
       <div class="tab-head">
         <div><div class="total-l">Total des revenus mensuels</div><div class="total num" id="totIncomes">0 €</div></div>
         <div class="meta">Salaire net après impôt à la source,<br>primes régulières, aides…</div>
+      </div>
+      <div class="reset-row">
+        <label for="resetDay">Mon mois budgétaire commence le</label>
+        <input id="resetDay" type="number" min="1" max="31" inputmode="numeric" enterkeyhint="done" value="1">
+        <span class="reset-hint" id="resetHint">Mettez le jour où votre salaire arrive : ce jour-là, votre reste à vivre repart au complet.</span>
       </div>
       <form class="add" data-kind="incomes" id="f-incomes" novalidate>
         <div class="f"><label for="inc-label">Libellé</label><input id="inc-label" name="label" placeholder="Salaire net" autocomplete="off"></div>
@@ -602,7 +613,7 @@ body.sheet-open .fab{display:none}
     </div>
   </section>
 
-  <p class="foot" id="foot">Fonctionne sans connexion. Vos chiffres restent sur cet appareil et ne sont envoyés nulle part. Pensez à exporter une sauvegarde de temps en temps. · Version 13</p>
+  <p class="foot" id="foot">Fonctionne sans connexion. Vos chiffres restent sur cet appareil et ne sont envoyés nulle part. Pensez à exporter une sauvegarde de temps en temps. · Version 14</p>
 </main>
 
 <button class="fab" type="button" id="fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Ajouter une dépense</button>
@@ -704,6 +715,21 @@ function isoDay(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2
 function parseIso(s){ const [y,m,d] = s.split("-").map(Number); return new Date(y, m-1, d); }
 function monthKey(d){ return isoDay(d).slice(0,7); }
 function monthDe(d){ const n = d.toLocaleDateString("fr-FR",{month:"long"}); return (/^[aeiou]/i.test(n) ? "d'" : "de ") + n; }
+/* Mois budgétaire : du jour de paie au veille du suivant (jour ramené au dernier jour des mois courts). */
+function resetDayOf(){ return state.resetDay || 1; }
+function clampDay(y, m, day){ return new Date(y, m, Math.min(day, new Date(y, m+1, 0).getDate())); }
+function periodOf(date){
+  const r = resetDayOf(), y = date.getFullYear(), m = date.getMonth();
+  const d0 = new Date(y, m, date.getDate());
+  let start = clampDay(y, m, r);
+  if(d0 < start) start = clampDay(y, m-1, r);
+  const next = clampDay(start.getFullYear(), start.getMonth()+1, r);
+  const end = new Date(next.getFullYear(), next.getMonth(), next.getDate()-1);
+  return {start, next, end, sIso:isoDay(start), eIso:isoDay(end)};
+}
+function inPeriod(iso, P){ return iso >= P.sIso && iso <= P.eIso; }
+function fDay(d){ return (d.getDate()===1 ? "1er" : d.getDate()) + "\u00a0" + d.toLocaleDateString("fr-FR",{month:"short"}); }
+function periodLabel(P){ return resetDayOf() === 1 ? monthDe(P.start) : "du "+fDay(P.start)+" au "+fDay(P.end); }
 const catById = Object.fromEntries(CATS.map(c=>[c.id,c]));
 
 const EXAMPLE = {
@@ -746,6 +772,7 @@ function normalize(d){
   d = d||{};
   const arr = a => Array.isArray(a)?a:[];
   return {
+    resetDay: Math.min(31, Math.max(1, parseInt(d.resetDay)||1)),
     name: (typeof d.name==="string" && d.name.trim()) ? d.name.trim().slice(0,40) : DEFAULT_NAME,
     example: !!d.example,
     incomes: arr(d.incomes).map(x=>({id:String(x.id||uid()),label:String(x.label||"Revenu"),amount:+x.amount||0})),
@@ -778,7 +805,7 @@ async function flush(){
     dirty = false;
     setSync("busy","Enregistrement…");
     try{
-      await ref.set({name:state.name, example:state.example, incomes:state.incomes, expenses:state.expenses, investments:state.investments, daily:state.daily, updatedAt:Date.now()});
+      await ref.set({name:state.name, resetDay:state.resetDay, example:state.example, incomes:state.incomes, expenses:state.expenses, investments:state.investments, daily:state.daily, updatedAt:Date.now()});
       setSync("ok","Sauvegardé");
     }catch(e){
       setSync("err","Échec de la sauvegarde, réessayez");
@@ -952,7 +979,9 @@ function renderUpcoming(today){
     ul.appendChild(li);
   }
   $("upAside").textContent = all.length>6 ? "6 sur "+all.length : "";
-  const leftThisMonth = items.filter(x=>x.date.getMonth()===today.getMonth() && x.date.getFullYear()===today.getFullYear()).reduce((a,x)=>a+x.amount,0);
+  const PP = periodOf(today);
+  const leftThisMonth = items.filter(x=>x.date < PP.next).reduce((a,x)=>a+x.amount,0);
+  $("monthLeftL").textContent = resetDayOf() === 1 ? "Encore à prélever ce mois-ci" : "Encore à prélever d'ici le "+fDay(PP.end);
   $("monthLeft").hidden = all.length===0;
   $("monthLeftV").textContent = eur(leftThisMonth);
 }
@@ -1014,6 +1043,20 @@ function renderLists(t){
 }
 
 document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) render(); });
+
+/* ---------- Début du mois budgétaire ---------- */
+function renderReset(){
+  const inp = $("resetDay");
+  if(document.activeElement !== inp) inp.value = String(resetDayOf());
+  const P = periodOf(new Date());
+  $("resetHint").textContent = "Mettez le jour où votre salaire arrive : ce jour-là, votre reste à vivre repart au complet. Période en cours : du "+fDay(P.start)+" au "+fDay(P.end);
+}
+$("resetDay").addEventListener("change", e=>{
+  const v = parseInt(e.target.value, 10);
+  if(!(v >= 1 && v <= 31)){ e.target.value = String(resetDayOf()); return; }
+  if(v !== resetDayOf()){ state.resetDay = v; render(); persist(); toast("Votre mois budgétaire commence désormais le "+(v===1?"1er":v), null); }
+});
+$("resetDay").addEventListener("keydown", e=>{ if(e.key === "Enter"){ e.preventDefault(); e.target.blur(); } });
 
 /* ---------- Nom du tableau ---------- */
 function fitName(){ const ni=$("appName"); ni.style.width = Math.max(6, ni.value.length + 1) + "ch"; }
@@ -1245,11 +1288,11 @@ const eurFloor = n => f0.format(Math.floor(n + 1e-9));
 const plural = (n, w) => n + " " + w + (n > 1 ? "s" : "");
 
 function dailyStats(t, today){
-  const key = monthKey(today), tk = isoDay(today);
-  const dim = new Date(today.getFullYear(), today.getMonth()+1, 0).getDate();
-  const d = today.getDate();
+  const P = periodOf(today), tk = isoDay(today);
+  const dim = Math.round((P.next - P.start) / 86400000);
+  const d = Math.round((new Date(today.getFullYear(), today.getMonth(), today.getDate()) - P.start) / 86400000) + 1;
   const daysLeft = dim - d + 1;
-  const items = state.daily.filter(x=>x.date.slice(0,7) === key);
+  const items = state.daily.filter(x=>inPeriod(x.date, P));
   const exps = items.filter(x=>x.kind !== "save");
   const monthSpent = sumAmt(exps);
   const monthSaved = sumAmt(items.filter(x=>x.kind === "save"));
@@ -1261,7 +1304,7 @@ function dailyStats(t, today){
   const dayBudget = Math.max(0, (budget - before) / daysLeft);
   const todayLeft = dayBudget - todaySpent;
   const expected = Math.max(0, budget) * (d - 1) / dim;
-  return {plan, monthSpent, monthSaved, todaySpent, before, remaining, dayBudget, todayLeft, expected, diff: before - expected, dim, d, daysLeft, items};
+  return {plan, monthSpent, monthSaved, todaySpent, before, remaining, dayBudget, todayLeft, expected, diff: before - expected, dim, d, daysLeft, items, P};
 }
 function paceOf(s){
   if(s.plan <= 0) return null;
@@ -1302,7 +1345,8 @@ function dItemHTML(x, withDay){
 function renderDaily(t, today){
   const s = dailyStats(t, today), p = paceOf(s);
   const pill = $("pacePill"), msg = {textContent:""}, help = $("helpNote"), ml = $("mLeft"), mo = $("mOf");
-  $("mTitle").textContent = "Reste à vivre "+monthDe(today);
+  $("mTitle").textContent = "Reste à vivre "+periodLabel(s.P);
+  renderReset();
   $("mSpent").textContent = eur(s.monthSpent);
   $("mSavedRow").hidden = !(s.monthSaved > 0);
   $("mSaved").textContent = eur(s.monthSaved);
@@ -1403,9 +1447,9 @@ function renderQuick(){
   const t = totals(); const now = new Date(); const s = dailyStats(t, now);
   const date = /^\d{4}-\d{2}-\d{2}$/.test($("qDate").value) ? $("qDate").value : isoDay(now);
   const old = q.editId ? state.daily.find(x=>x.id === q.editId) : null;
-  if(t.income <= 0 || s.plan <= 0 || date.slice(0,7) !== monthKey(now)){ pv.hidden = true; return; }
+  if(t.income <= 0 || s.plan <= 0 || !inPeriod(date, s.P)){ pv.hidden = true; return; }
   pv.hidden = false;
-  const left = s.remaining + (old && old.date.slice(0,7) === date.slice(0,7) ? old.amount : 0) - v;
+  const left = s.remaining + (old && inPeriod(old.date, s.P) ? old.amount : 0) - v;
   if(left >= 0){ pv.className = "pill good"; pv.textContent = "Il vous restera "+f2.format(left)+" ce mois-ci"; }
   else { pv.className = "pill warn"; pv.textContent = "Reste à vivre dépassé de "+f2.format(-left); }
 }
@@ -1482,16 +1526,16 @@ $("qCats").addEventListener("click", e=>{ const b = e.target.closest("[data-qcat
 $("qPad").addEventListener("click", e=>{ const b = e.target.closest("[data-key]"); if(b) pressKey(b.dataset.key); });
 
 /* Dépenses du mois */
-let viewMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+let viewStart = periodOf(new Date()).start;
 function openMonth(){
-  const n = new Date(); viewMonth = new Date(n.getFullYear(), n.getMonth(), 1);
+  viewStart = periodOf(new Date()).start;
   showSheet("mSheet"); renderMonthSheet(); $("msTitle").focus({preventScroll:true});
 }
 function renderMonthSheet(){
-  const now = new Date(), key = monthKey(viewMonth), isCurrent = key === monthKey(now);
-  $("msTitle").textContent = "Dépenses "+monthDe(viewMonth)+(viewMonth.getFullYear() !== now.getFullYear() ? " "+viewMonth.getFullYear() : "");
+  const now = new Date(), PV = periodOf(viewStart), isCurrent = PV.sIso === periodOf(now).sIso;
+  $("msTitle").textContent = "Dépenses "+periodLabel(PV)+(PV.start.getFullYear() !== now.getFullYear() ? " "+PV.start.getFullYear() : "");
   $("msNext").disabled = isCurrent;
-  const items = sortDaily(state.daily.filter(x=>x.date.slice(0,7) === key));
+  const items = sortDaily(state.daily.filter(x=>inPeriod(x.date, PV)));
   const exps = items.filter(x=>x.kind !== "save");
   const saved = sumAmt(items.filter(x=>x.kind === "save"));
   const total = sumAmt(exps);
@@ -1523,8 +1567,8 @@ function renderMonthSheet(){
 }
 $("seeAll").addEventListener("click", openMonth);
 $("msClose").addEventListener("click", ()=>hideSheet("mSheet"));
-$("msPrev").addEventListener("click", ()=>{ viewMonth = new Date(viewMonth.getFullYear(), viewMonth.getMonth()-1, 1); renderMonthSheet(); });
-$("msNext").addEventListener("click", ()=>{ viewMonth = new Date(viewMonth.getFullYear(), viewMonth.getMonth()+1, 1); renderMonthSheet(); });
+$("msPrev").addEventListener("click", ()=>{ const P = periodOf(viewStart); viewStart = periodOf(new Date(P.start.getFullYear(), P.start.getMonth(), P.start.getDate()-1)).start; renderMonthSheet(); });
+$("msNext").addEventListener("click", ()=>{ viewStart = periodOf(viewStart).next; renderMonthSheet(); });
 
 document.addEventListener("click", e=>{
   const b = e.target.closest("[data-dedit]");
@@ -1569,7 +1613,7 @@ selectTab(savedTab);
 requestAnimationFrame(draw);
 /* ---------- Sauvegarde / restauration ---------- */
 $("exportBtn").addEventListener("click", ()=>{
-  const data = JSON.stringify({app:"budget-liquide", version:1, exportedAt:new Date().toISOString(), name:state.name, incomes:state.incomes, expenses:state.expenses, investments:state.investments, daily:state.daily}, null, 2);
+  const data = JSON.stringify({app:"budget-liquide", version:1, exportedAt:new Date().toISOString(), name:state.name, resetDay:state.resetDay, incomes:state.incomes, expenses:state.expenses, investments:state.investments, daily:state.daily}, null, 2);
   const fname = "dashboard-budget-" + new Date().toISOString().slice(0,10) + ".json";
   const blob = new Blob([data], {type:"application/json"});
   try{
